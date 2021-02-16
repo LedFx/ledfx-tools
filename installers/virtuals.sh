@@ -181,7 +181,7 @@ delete-config() {
 }
 
 backup-config() {
-  cp ~/.ledfx/config.json ~/config.json.bak
+  cp ~/.ledfx/config.json ~/ledfx_config.json.bak
   menu
 }
 
@@ -206,7 +206,7 @@ repair-ledfx() {
 }
 
 menu() {
-  FILE=~/home/pi/.ledfx/ledfx-venv/bin/ledfx
+  FILE=~/.ledfx/ledfx-venv/bin/ledfx
   
   if [ -f "$FILE" ]; then
 
