@@ -67,9 +67,6 @@ install_python39() {
     libavformat58 \
     portaudio19-dev \
     pulseaudio \
-    python3-pip \
-    python3-dev \
-    python3-venv \
     avahi-daemon \
     build-essential \
     tk-dev \
@@ -120,7 +117,6 @@ install-ledfx() {
   libavformat58 \
   portaudio19-dev \
   pulseaudio \
-  python3-pip \
   avahi-daemon 
   python3.9 -m venv ~/.ledfx/ledfx-venv
   source ~/.ledfx/ledfx-venv/bin/activate
@@ -210,7 +206,7 @@ repair-ledfx() {
 }
 
 menu() {
-  FILE=~/.ledfx/config.json
+  FILE=~/home/pi/.ledfx/ledfx-venv/bin/ledfx
   
   if [ -f "$FILE" ]; then
 
