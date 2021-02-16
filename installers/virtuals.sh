@@ -35,25 +35,25 @@ install_python39() {
   if [ "$python3_version" = "Python 3.9.1" ]; then
     echo "Python 3.9.1 Already Installed"
     installed_39="true"
-    install-ledfx
+    menu
   fi
 
   if [ "$python3_version" = "Python 3.9.0" ]; then
     echo "Python 3.9.0 Already Installed"
     installed_39="true"
-    install-ledfx
+    menu
   fi
 
   if [ "$python39_version" = "Python 3.9.1" ]; then
     echo "Python 3.9.1 Already Installed"
     installed_39="true"
-    install-ledfx
+    menu
   fi
 
   if [ "$python39_version" = "Python 3.9.0" ]; then
     echo "Python 3.9.0 Already Installed"
     installed_39="true"
-    install-ledfx
+    menu
   fi
   
   if [ "$installed_39" = "false" ]; then
