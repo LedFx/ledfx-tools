@@ -35,28 +35,32 @@ install_python39() {
   if [ "$python3_version" = "Python 3.9.1" ]; then
     echo "Python 3.9.1 Already Installed"
     installed_39="true"
+    install-ledfx
   fi
 
   if [ "$python3_version" = "Python 3.9.0" ]; then
     echo "Python 3.9.0 Already Installed"
     installed_39="true"
+    install-ledfx
   fi
 
   if [ "$python39_version" = "Python 3.9.1" ]; then
     echo "Python 3.9.1 Already Installed"
     installed_39="true"
+    install-ledfx
   fi
 
   if [ "$python39_version" = "Python 3.9.0" ]; then
     echo "Python 3.9.0 Already Installed"
     installed_39="true"
+    install-ledfx
   fi
-  menu
+  
   if [ "$installed_39" = "false" ]; then
 
-    echo "Ensuring build environment setup correctly for python installation"
-    sudo apt-get update
-    sudo apt-get upgrade
+    echo "Ensuring build environment setup correctly for python 3.9 installation"
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
     sudo apt-get install -y gcc \
     git \
     libatlas3-base \
@@ -84,25 +88,25 @@ install_python39() {
     libtiff-dev \
     autoconf \
     libopenjp2-7
-
-    python3 -m pip install --upgrade pip wheel setuptools
+    
     # Python3.9 build from source
 
     version=3.9.1
     wget -O /tmp/Python-$version.tar.xz https://www.python.org/ftp/python/$version/Python-$version.tar.xz
     cd /tmp/ || exit
     tar xf Python-$version.tar.xz
+    rm Python-$version.tar.xz 
     cd Python-$version/ || exit
     ./configure --enable-optimizations
     sudo make altinstall
     sudo apt -y autoremove
     cd ~ || exit
-    sudo rm -rf /tmp/Python-$version
-    rm /tmp/Python-$version.tar.xz
-
-    # End 3.9 source build
+    rm -rf Python-$version/
+    export C_INCLUDE_PATH=/usr/local/include/python3.9:/usr/lib/python3/dist-packages/numpy/core/include/numpy/
+    export CPLUS_INCLUDE_PATH=/usr/local/include/python3.9:/usr/lib/python3/dist-packages/numpy/core/include/numpy/
     sudo ln -s /usr/local/bin/python3.9 /usr/bin/python3.9
     echo "alias python3.9=/usr/local/bin/python3.9" >>~/.bashrc
+    # End 3.9 source build
     menu
   fi
 }
@@ -120,7 +124,7 @@ install-ledfx() {
   avahi-daemon 
   python3.9 -m venv ~/.ledfx/ledfx-venv
   source ~/.ledfx/ledfx-venv/bin/activate
-  python3.9 -m pip install --upgrade pip wheel setuptools
+  python3.9 -m pip install --upgrade pip wheel setuptools aubio
   curruser=$USER
   IP=$(/sbin/ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')
   echo "Downloading and installing latest version of LedFx from github"
@@ -143,7 +147,6 @@ install-ledfx() {
     RestartSec=5
     User="$curruser"
     Group=audio
-    /home/pi/.ledfx/ledfx/bin/python3.9
     ExecStart=/home/"$curruser"/.ledfx/ledfx-venv/bin/python3.9 /home/"$curruser"/.ledfx/ledfx-venv/bin/ledfx
     Environment=XDG_RUNTIME_DIR=/run/user/"$UID"
     [Install]
