@@ -117,7 +117,9 @@ install-ledfx() {
   libavformat58 \
   portaudio19-dev \
   pulseaudio \
-  avahi-daemon 
+  avahi-daemon \
+  llvm-9
+  sudo ln -s /usr/bin/llvm-config-9 /usr/bin/llvm-config
   python3.9 -m venv ~/.ledfx/ledfx-venv
   source ~/.ledfx/ledfx-venv/bin/activate
   python3.9 -m pip install --upgrade pip wheel setuptools aubio
