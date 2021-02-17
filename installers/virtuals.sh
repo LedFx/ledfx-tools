@@ -163,6 +163,7 @@ install-ledfx() {
 }
 
 update-ledfx() {
+  source ~/.ledfx/ledfx-venv/bin/activate
   sudo systemctl stop ledfx 2>/dev/null
   python3.9 -m pip install --no-cache-dir --upgrade --force-reinstall git+https://github.com/LedFx/LedFx@Virtuals
   echo "All Updated, enjoy LedFx!"
@@ -170,6 +171,7 @@ update-ledfx() {
 }
 
 delete-config() {
+  source ~/.ledfx/ledfx-venv/bin/activate
   sudo systemctl stop ledfx 2>/dev/null
   echo "Stopping Service..."
   sleep 2
@@ -186,6 +188,7 @@ backup-config() {
 }
 
 uninstall-ledfx() {
+  source ~/.ledfx/ledfx-venv/bin/activate
   echo "Removing LedFx installation and configuration"
   sudo systemctl stop ledfx 2>/dev/null
   sudo systemctl disable ledfx 2>/dev/null
@@ -197,6 +200,7 @@ uninstall-ledfx() {
 }
 
 repair-ledfx() {
+  source ~/.ledfx/ledfx-venv/bin/activate
   echo "Removing old LedFx installation"
   sudo systemctl stop ledfx 2>/dev/null
   sudo systemctl disable ledfx 2>/dev/null
@@ -207,7 +211,7 @@ repair-ledfx() {
 
 menu() {
   FILE=~/.ledfx/ledfx-venv/bin/ledfx
-  
+  source ~/.ledfx/ledfx-venv/bin/activate
   if [ -f "$FILE" ]; then
 
     INSTALLOPTION=$(
