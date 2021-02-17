@@ -127,6 +127,7 @@ install-ledfx() {
   python3.9 -m pip install --no-cache-dir git+https://github.com/LedFx/LedFx@Virtuals
   echo "Adding" $curruser "to Audio Group"
   sudo usermod -a -G audio $curruser
+  alias ledfx='~/.ledfx/ledfx-venv/bin/python3.9 ~/.ledfx/ledfx-venv/bin/ledfx'
   whiptail --yesno "Install LedFx as a service so it launches automatically on boot?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
   SERVICE=$?
   if [ "$SERVICE" = "0" ]; then
@@ -194,7 +195,8 @@ uninstall-ledfx() {
   sudo systemctl disable ledfx 2>/dev/null
   sudo rm /etc/systemd/system/ledfx.service 2>/dev/null
   python3.9 -m pip -q uninstall -y ledfx 2>/dev/null
-
+  unalias ledfx
+  deactivate
   rm -rf ~/.ledfx/
   echo "LedFx uninstalled. Sorry to see you go :("
 }
