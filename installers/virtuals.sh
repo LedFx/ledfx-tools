@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090
-export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+#export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 if [ -t 0 ]; then
   screen_size=$(stty size)
 else
