@@ -21,8 +21,6 @@ curl -sSL https://install.ledfx.app/ledfxrainbow.out | cat
 # Could probably do something more productive here to display the logo, but oh well.
 sleep 3
 
-echo $PATH
-
 install_python39() {
   FILE="$(which python3.9)"
   installed_39="false"
