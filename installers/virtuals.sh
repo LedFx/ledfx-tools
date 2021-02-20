@@ -25,21 +25,11 @@ echo $PATH
 
 install_python39() {
   FILE="$(which python3.9)"
-  echo "Python 3.9 is located at "$FILE"\n"
-  sleep 3
   installed_39="false"
-  echo "installed_39="$installed_39""
-  sleep 3
   python3_version="$(python3 -V 2>&1)"
-  echo "Python 3 version is "$python3_version"\n"
-  sleep 3
   if [ -f "$FILE" ]; then
   python39_version="$("$FILE" -V 2>&1)"
-  echo "Python 3.9 version is "$python39_version"\n"
-  sleep 3
   installed_39="true"
-  echo "installed_39="$installed_39""
-  sleep 3
   
   fi
 
@@ -168,7 +158,6 @@ install-ledfx() {
     sudo mv ~/ledfx.service /etc/systemd/system/ledfx.service
     sudo systemctl enable ledfx
     sudo systemctl start ledfx
-    sudo systemctl status ledfx
     echo "LedFx is now running. Please navigate to "$IP":8888 in your web browser"
     echo "If you have no audio devices in LedFx and you're on a Raspberry Pi, please run 'sudo raspi-config' and setup your audio device (System Devices -> Audio)"
 
