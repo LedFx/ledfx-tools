@@ -27,7 +27,7 @@ install_python39() {
   installed_39="false"
   python3_version="$(python3 -V 2>&1)"
   if [ -f "$FILE" ]; then
-  python39_version="$(FILE -V 2>&1)"
+  python39_version="$("$FILE" -V 2>&1)"
   installed_39="true"
   
   fi
