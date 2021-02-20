@@ -24,11 +24,21 @@ sleep 3
 
 install_python39() {
   FILE="$(which python3.9)"
+  echo "Python 3.9 is located at "$FILE"\n"
+  sleep 3
   installed_39="false"
+  echo "installed_39="$installed_39""
+  sleep 3
   python3_version="$(python3 -V 2>&1)"
+  echo "Python 3 version is "$python3_version"\n"
+  sleep 3
   if [ -f "$FILE" ]; then
   python39_version="$("$FILE" -V 2>&1)"
+  echo "Python 3.9 version is "$python39_version"\n"
+  sleep 3
   installed_39="true"
+  echo "installed_39="$installed_39""
+  sleep 3
   
   fi
 
