@@ -31,29 +31,24 @@ install_python39() {
   
   fi
 
-  if [ "$python3_version" = "Python 3.9.1" ]; then
-    echo "Python 3.9.1 Already Installed"
-    installed_39="true"
-    menu
-  fi
-
   if [ "$python3_version" = "Python 3.9.0" ]; then
     echo "Python 3.9.0 Already Installed"
     installed_39="true"
     menu
   fi
 
-  if [ "$python39_version" = "Python 3.9.1" ]; then
+  if [ "$python3_version" = "Python 3.9.1" ]; then
     echo "Python 3.9.1 Already Installed"
     installed_39="true"
     menu
   fi
 
-  if [ "$python39_version" = "Python 3.9.0" ]; then
-    echo "Python 3.9.0 Already Installed"
+  if [ "$python39_version" = "Python 3.9.2" ]; then
+    echo "Python 3.9.2 Already Installed"
     installed_39="true"
     menu
   fi
+
   
   if [ "$installed_39" = "false" ]; then
     whiptail --yesno "LedFx requires Python 3.9 or greater. Would you like to install Python 3.9 now?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
@@ -89,7 +84,7 @@ install_python39() {
 
       # Python3.9 build from source
 
-      version=3.9.1
+      version=3.9.2
       wget -O /tmp/Python-$version.tar.xz https://www.python.org/ftp/python/$version/Python-$version.tar.xz
       cd /tmp/ || exit
       tar xf Python-$version.tar.xz
