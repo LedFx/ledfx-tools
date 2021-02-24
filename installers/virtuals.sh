@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090
-export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 if [ -t 0 ]; then
   screen_size=$(stty size)
 else
@@ -23,11 +22,11 @@ curl -sSL https://install.ledfx.app/ledfxrainbow.out | cat
 sleep 3
 
 install_python39() {
-  FILE=/usr/local/bin/python3.9
+  FILE="$(which python3.9)"
   installed_39="false"
   python3_version="$(python3 -V 2>&1)"
   if [ -f "$FILE" ]; then
-  python39_version="$(/usr/local/bin/python3.9 -V 2>&1)"
+  python39_version="$("$FILE" -V 2>&1)"
   installed_39="true"
   
   fi
@@ -57,54 +56,57 @@ install_python39() {
   fi
   
   if [ "$installed_39" = "false" ]; then
+    whiptail --yesno "LedFx requires Python 3.9 or greater. Would you like to install Python 3.9 now?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
+    INST_PYTHON=$?
+    if [ "$INST_PYTHON" = "0" ]; then
+      echo "Ensuring build environment setup correctly for python 3.9 installation"
+      sudo apt-get update -y
+      sudo apt-get upgrade -y
+      sudo apt-get install -y gcc \
+      git \
+      libatlas3-base \
+      libavformat58 \
+      portaudio19-dev \
+      pulseaudio \
+      avahi-daemon \
+      build-essential \
+      tk-dev \
+      libncurses5-dev \
+      libncursesw5-dev \
+      libreadline6-dev \
+      libdb5.3-dev \
+      libgdbm-dev \
+      libsqlite3-dev \
+      libssl-dev \
+      libbz2-dev \
+      libexpat1-dev \
+      liblzma-dev \
+      zlib1g-dev \
+      libffi-dev \
+      libtiff-dev \
+      autoconf \
+      libopenjp2-7
 
-    echo "Ensuring build environment setup correctly for python 3.9 installation"
-    sudo apt-get update -y
-    sudo apt-get upgrade -y
-    sudo apt-get install -y gcc \
-    git \
-    libatlas3-base \
-    libavformat58 \
-    portaudio19-dev \
-    pulseaudio \
-    avahi-daemon \
-    build-essential \
-    tk-dev \
-    libncurses5-dev \
-    libncursesw5-dev \
-    libreadline6-dev \
-    libdb5.3-dev \
-    libgdbm-dev \
-    libsqlite3-dev \
-    libssl-dev \
-    libbz2-dev \
-    libexpat1-dev \
-    liblzma-dev \
-    zlib1g-dev \
-    libffi-dev \
-    libtiff-dev \
-    autoconf \
-    libopenjp2-7
-    
-    # Python3.9 build from source
+      # Python3.9 build from source
 
-    version=3.9.1
-    wget -O /tmp/Python-$version.tar.xz https://www.python.org/ftp/python/$version/Python-$version.tar.xz
-    cd /tmp/ || exit
-    tar xf Python-$version.tar.xz
-    rm Python-$version.tar.xz 
-    cd Python-$version/ || exit
-    ./configure --enable-optimizations
-    sudo make altinstall
-    sudo apt -y autoremove
-    cd ~ || exit
-    rm -rf Python-$version/
-    export C_INCLUDE_PATH=/usr/local/include/python3.9:/usr/lib/python3/dist-packages/numpy/core/include/numpy/
-    export CPLUS_INCLUDE_PATH=/usr/local/include/python3.9:/usr/lib/python3/dist-packages/numpy/core/include/numpy/
-    sudo ln -s /usr/local/bin/python3.9 /usr/bin/python3.9
-    echo "alias python3.9=/usr/local/bin/python3.9" >>~/.bashrc
-    # End 3.9 source build
-    menu
+      version=3.9.1
+      wget -O /tmp/Python-$version.tar.xz https://www.python.org/ftp/python/$version/Python-$version.tar.xz
+      cd /tmp/ || exit
+      tar xf Python-$version.tar.xz
+      rm Python-$version.tar.xz 
+      cd Python-$version/ || exit
+      ./configure --enable-optimizations
+      sudo make altinstall
+      sudo apt -y autoremove
+      cd ~ || exit
+      rm -rf Python-$version/
+      export C_INCLUDE_PATH=/usr/local/include/python3.9:/usr/lib/python3/dist-packages/numpy/core/include/numpy/
+      export CPLUS_INCLUDE_PATH=/usr/local/include/python3.9:/usr/lib/python3/dist-packages/numpy/core/include/numpy/
+      sudo ln -s /usr/local/bin/python3.9 /usr/bin/python3.9
+      echo "alias python3.9=/usr/local/bin/python3.9" >>~/.bashrc
+      # End 3.9 source build
+      menu
+    fi
   fi
 }
 
@@ -154,7 +156,6 @@ install-ledfx() {
     sudo mv ~/ledfx.service /etc/systemd/system/ledfx.service
     sudo systemctl enable ledfx
     sudo systemctl start ledfx
-    sudo systemctl status ledfx
     echo "LedFx is now running. Please navigate to "$IP":8888 in your web browser"
     echo "If you have no audio devices in LedFx and you're on a Raspberry Pi, please run 'sudo raspi-config' and setup your audio device (System Devices -> Audio)"
 
