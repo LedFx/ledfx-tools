@@ -123,7 +123,7 @@ install-ledfx() {
   curruser=$USER
   IP=$(/sbin/ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')
   echo "Downloading and installing latest version of LedFx from github"
-  python3.9 -m pip install --no-cache-dir git+https://github.com/LedFx/LedFx@Virtuals
+  python3.9 -m pip install --no-cache-dir git+https://github.com/LedFx/LedFx@dev
   echo "Adding" $curruser "to Audio Group"
   sudo usermod -a -G audio $curruser
   echo "alias ledfx='~/.ledfx/ledfx-venv/bin/python3.9 ~/.ledfx/ledfx-venv/bin/ledfx'" >>~/.bashrc
@@ -164,7 +164,7 @@ install-ledfx() {
 update-ledfx() {
   source ~/.ledfx/ledfx-venv/bin/activate
   sudo systemctl stop ledfx 2>/dev/null
-  python3.9 -m pip install --no-cache-dir --upgrade --force-reinstall git+https://github.com/LedFx/LedFx@Virtuals
+  python3.9 -m pip install --no-cache-dir --upgrade --force-reinstall git+https://github.com/LedFx/LedFx@dev
   echo "All Updated, enjoy LedFx!"
   sudo systemctl start ledfx 2>/dev/null
 }
