@@ -48,8 +48,25 @@ install_python39() {
     installed_39="true"
     menu
   fi
-
   
+  if [ "$python39_version" = "Python 3.9.3" ]; then
+    echo "Python 3.9.3 Already Installed"
+    installed_39="true"
+    menu
+  fi
+  
+  if [ "$python39_version" = "Python 3.9.4" ]; then
+    echo "Python 3.9.4 Already Installed"
+    installed_39="true"
+    menu
+  fi
+  
+  if [ "$python39_version" = "Python 3.9.5" ]; then
+    echo "Python 3.9.5 Already Installed"
+    installed_39="true"
+    menu
+  fi
+
   if [ "$installed_39" = "false" ]; then
     whiptail --yesno "LedFx requires Python 3.9 or greater. Would you like to install Python 3.9 now?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
     INST_PYTHON=$?
