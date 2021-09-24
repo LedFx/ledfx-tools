@@ -67,6 +67,12 @@ install_python39() {
     menu
   fi
 
+  if [ "$python39_version" = "Python 3.9.6" ]; then
+    echo "Python 3.9.5 Already Installed"
+    installed_39="true"
+    menu
+  fi
+
   if [ "$installed_39" = "false" ]; then
     whiptail --yesno "LedFx requires Python 3.9 or greater. Would you like to install Python 3.9 now?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
     INST_PYTHON=$?
@@ -101,7 +107,7 @@ install_python39() {
 
       # Python3.9 build from source
 
-      version=3.9.2
+      version=3.9.6
       wget -O /tmp/Python-$version.tar.xz https://www.python.org/ftp/python/$version/Python-$version.tar.xz
       cd /tmp/ || exit
       tar xf Python-$version.tar.xz
@@ -134,21 +140,23 @@ install-ledfx() {
   avahi-daemon \
   llvm-9
   sudo ln -s /usr/bin/llvm-config-9 /usr/bin/llvm-config
-  python3.9 -m venv ~/.ledfx/ledfx-venv
-  source ~/.ledfx/ledfx-venv/bin/activate
+  python3.9 -m venv ~/.ledfx/ledfx-beta
+  source ~/.ledfx/ledfx-beta/bin/activate
   python3.9 -m pip install --upgrade pip wheel setuptools aubio
   curruser=$USER
   IP=$(/sbin/ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')
   echo "Downloading and installing latest version of LedFx from github"
-  python3.9 -m pip install --no-cache-dir git+https://github.com/LedFx/LedFx@dev
+  python3.9 -m pip install --no-cache-dir git+https://github.com/LedFx/LedFx@frontend_beta
+  python3.9 -m pip uninstall numpy certifi CFFI -y
+  python3.9 -m pip install "numpy~=1.20.2" certifi CFFI --no-binary :all:
   echo "Adding" $curruser "to Audio Group"
   sudo usermod -a -G audio $curruser
-  echo "alias ledfx='~/.ledfx/ledfx-venv/bin/python3.9 ~/.ledfx/ledfx-venv/bin/ledfx'" >>~/.bashrc
+  echo "alias ledfx-beta='~/.ledfx/ledfx-beta/bin/python3.9 ~/.ledfx/ledfx-beta/bin/ledfx -c /.ledfx/ledfx-beta/conf -p 8889'" >>~/.bashrc
   whiptail --yesno "Install LedFx as a service so it launches automatically on boot?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
   SERVICE=$?
   if [ "$SERVICE" = "0" ]; then
 
-    echo "Installing LedFx Service"
+    echo "Installing LedFx Beta Service"
     echo "[Unit]
     Description=LedFx Music Visualizer
     After=network.target sound.target
@@ -160,75 +168,79 @@ install-ledfx() {
     RestartSec=5
     User="$curruser"
     Group=audio
-    ExecStart=/home/"$curruser"/.ledfx/ledfx-venv/bin/python3.9 /home/"$curruser"/.ledfx/ledfx-venv/bin/ledfx
+    ExecStart=/home/"$curruser"/.ledfx/ledfx-beta/bin/python3.9 /home/"$curruser"/.ledfx/ledfx-beta/bin/ledfx -c /home/"$curruser"/.ledfx/ledfx-beta/conf -p 8889
     Environment=XDG_RUNTIME_DIR=/run/user/"$UID"
     [Install]
     WantedBy=multi-user.target
-    " >>~/ledfx.service
-    sudo mv ~/ledfx.service /etc/systemd/system/ledfx.service
-    sudo systemctl enable ledfx
-    sudo systemctl start ledfx
-    echo "LedFx is now running. Please navigate to "$IP":8888 in your web browser"
+    " >>~/ledfx-beta.service
+    sudo mv ~/ledfx-beta.service /etc/systemd/system/ledfx-beta.service
+    sudo systemctl enable ledfx-beta
+    sudo systemctl start ledfx-beta
+    echo "LedFx is now running. Please navigate to "$IP":8889 in your web browser"
     echo "If you have no audio devices in LedFx and you're on a Raspberry Pi, please run 'sudo raspi-config' and setup your audio device (System Devices -> Audio)"
 
   else
 
-    echo "LedFx is now installed. Please type ledfx to start."
+    source ~/.bashrc
+    echo "LedFx is now installed. Please type ledfx-beta to start."
     echo "If you have no audio devices in LedFx and you're on a Raspberry Pi, please run 'sudo raspi-config' and setup your audio device (System Devices -> Audio)"
   fi
 }
 
 update-ledfx() {
-  source ~/.ledfx/ledfx-venv/bin/activate
-  sudo systemctl stop ledfx 2>/dev/null
-  python3.9 -m pip install --no-cache-dir --upgrade --force-reinstall git+https://github.com/LedFx/LedFx@dev
+  source ~/.ledfx/ledfx-beta/bin/activate
+  sudo systemctl stop ledfx-beta 2>/dev/null
+  python3.9 -m pip install --no-cache-dir --upgrade --force-reinstall git+https://github.com/LedFx/LedFx@frontend_beta
+  python3.9 -m pip uninstall numpy certifi CFFI -y
+  python3.9 -m pip install "numpy~=1.20.2" certifi CFFI --no-binary :all:
+
   echo "All Updated, enjoy LedFx!"
-  sudo systemctl start ledfx 2>/dev/null
+  sudo systemctl start ledfx-beta 2>/dev/null
 }
 
 delete-config() {
-  source ~/.ledfx/ledfx-venv/bin/activate
-  sudo systemctl stop ledfx 2>/dev/null
+  source ~/.ledfx/ledfx-beta/bin/activate
+  sudo systemctl stop ledfx-beta 2>/dev/null
   echo "Stopping Service..."
   sleep 2
-  rm ~/.ledfx/config.json
+  rm ~/.ledfx/ledfx-beta/conf/config.json
   echo "Configuration Deleted"
   echo "Restarting Service..."
-  sudo systemctl start ledfx 2>/dev/null
+  sudo systemctl start ledfx-beta 2>/dev/null
   echo "Relaunch LedFx to rebuild if you aren't using a service. Otherwise you're good to go."
 }
 
 backup-config() {
-  cp ~/.ledfx/config.json ~/ledfx_config.json.bak
+  cp ~/.ledfx/ledfx-beta/conf/config.json ~/ledfx_beta_config.json.bak
   menu
 }
 
 uninstall-ledfx() {
-  source ~/.ledfx/ledfx-venv/bin/activate
+  source ~/.ledfx/ledfx-beta/bin/activate
   echo "Removing LedFx installation and configuration"
-  sudo systemctl stop ledfx 2>/dev/null
-  sudo systemctl disable ledfx 2>/dev/null
-  sudo rm /etc/systemd/system/ledfx.service 2>/dev/null
+  sudo systemctl stop ledfx-beta 2>/dev/null
+  sudo systemctl disable ledfx-beta 2>/dev/null
+  sudo rm /etc/systemd/system/ledfx-beta.service 2>/dev/null
   python3.9 -m pip -q uninstall -y ledfx 2>/dev/null
   unalias ledfx
   deactivate
-  rm -rf ~/.ledfx/
+  rm -rf ~/.ledfx/ledfx-beta
   echo "LedFx uninstalled. Sorry to see you go :("
 }
 
 repair-ledfx() {
-  source ~/.ledfx/ledfx-venv/bin/activate
+  source ~/.ledfx/ledfx-beta/bin/activate
   echo "Removing old LedFx installation"
-  sudo systemctl stop ledfx 2>/dev/null
-  sudo systemctl disable ledfx 2>/dev/null
-  sudo rm /etc/systemd/system/ledfx.service 2>/dev/null
+  sudo systemctl stop ledfx-beta 2>/dev/null
+  sudo systemctl disable ledfx-beta 2>/dev/null
+  sudo rm /etc/systemd/system/ledfx-beta.service 2>/dev/null
   python3.9 -m pip -q uninstall -y ledfx 2>/dev/null
   install-ledfx
 }
 
 menu() {
-  FILE=~/.ledfx/ledfx-venv/bin/ledfx
-  source ~/.ledfx/ledfx-venv/bin/activate
+  FILE=~/.ledfx/ledfx-beta/bin/ledfx
+  source ~/.ledfx/ledfx-beta/bin/activate
   if [ -f "$FILE" ]; then
 
     INSTALLOPTION=$(
@@ -262,3 +274,4 @@ menu() {
   fi
 }
 install_python39
+
