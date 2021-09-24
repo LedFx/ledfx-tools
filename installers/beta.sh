@@ -151,7 +151,7 @@ install-ledfx() {
   python3.9 -m pip install "numpy~=1.20.2" certifi CFFI --no-binary :all:
   echo "Adding" $curruser "to Audio Group"
   sudo usermod -a -G audio $curruser
-  echo "alias ledfx-beta='~/.ledfx/ledfx-beta/bin/python3.9 ~/.ledfx/ledfx-beta/bin/ledfx -c /.ledfx/ledfx-beta/conf -p 8889'" >>~/.bashrc
+  echo "alias ledfx-beta='~/.ledfx/ledfx-beta/bin/python3.9 ~/.ledfx/ledfx-beta/bin/ledfx -c ~/.ledfx/ledfx-beta/conf -p 8889'" >>~/.bashrc
   whiptail --yesno "Install LedFx as a service so it launches automatically on boot?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
   SERVICE=$?
   if [ "$SERVICE" = "0" ]; then
