@@ -16,10 +16,6 @@
   # Unless the screen is tiny
   r=$(( r < 20 ? 20 : r ))
   c=$(( c < 70 ? 70 : c ))
-  # Pretty logo so we can verify it's us.
-  curl -sSL https://install.ledfx.app/ledfxrainbow.out | cat
-  # Could probably do something more productive here to display the logo, but oh well.
-  sleep 3
 
   install-ledfx () {
     echo "Ensuring build environment setup correctly"
