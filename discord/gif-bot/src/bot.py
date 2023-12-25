@@ -51,23 +51,17 @@ async def add_gif(interaction, name: str, url: str):
 
     GIF_URL = url
 
-    await check_existing_file(channel, user_id, GIF_NAME)
-    await check_gif_details(interaction, GIF_URL, GIF_NAME)
-    await download_gif(channel, user_id, GIF_URL, GIF_NAME)
-    await upload_gif(channel, user_id, GIF_NAME)
-
-
-async def check_existing_file(channel, user_id, GIF_NAME):
+    # Check if file already exists with this name and return an error if so
     existing_file_url = f"https://assets.ledfx.app/gifs/{GIF_NAME}"
     response = requests.head(existing_file_url)
     if response.status_code == 200:
-        await channel.send(
+        await interaction.response.send_message(
             f"A file with the same name already exists: {existing_file_url}"
         )
         return
 
 
-async def check_gif_details(interaction, GIF_URL, GIF_NAME):
+    # Grab headers first to avoid having to download the gif and potentially miss the 3 second timeout
     try:
         quick_gif_check = requests.head(GIF_URL)
         quick_content_type = quick_gif_check.headers.get("content-type")
@@ -86,8 +80,7 @@ async def check_gif_details(interaction, GIF_URL, GIF_NAME):
         )
         return
 
-
-async def download_gif(channel, user_id, GIF_URL, GIF_NAME):
+    # Download the GIF
     try:
         response = requests.get(GIF_URL)
     except Exception as e:
@@ -103,9 +96,10 @@ async def download_gif(channel, user_id, GIF_URL, GIF_NAME):
         return
 
     try:
+        # Create a BytesIO object and write the response content to it
         file_obj = io.BytesIO()
         file_obj.write(response.content)
-        file_obj.seek(0)
+        file_obj.seek(0)  # Reset the file pointer to the beginning
 
         transport = paramiko.Transport((SFTP_HOST, 22))
         transport.connect(username=SFTP_USERNAME, password=SFTP_PASSWORD)
