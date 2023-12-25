@@ -112,6 +112,7 @@ async def add_gif(interaction, name: str, url: str):
         )
     except Exception as e:
         await channel.send(f"<@{user_id}>: Failed to upload the last GIF: {str(e)}")
+        return
 
 
 client.run(DISCORD_TOKEN)
