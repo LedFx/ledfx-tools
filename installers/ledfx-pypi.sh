@@ -22,17 +22,17 @@
     sudo apt-get update
     sudo apt-get install -y gcc \
             git \
-            libatlas3-base \
-            libavformat58 \
             portaudio19-dev \
             pulseaudio \
             python3-pip \
+            python3-venv \
             avahi-daemon
-    python3 -m pip install --upgrade pip wheel setuptools
+    python3 -m venv $HOME/.ledfx
+    $HOME/.ledfx/bin/python -m pip install --upgrade pip wheel setuptools
     curruser=$USER
     IP=$(/sbin/ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')
     echo "Downloading and installing latest version of LedFx from github"
-    python3 -m pip install ledfx
+    $HOME/.ledfx/bin/python -m pip install ledfx
     echo "Adding" $curruser "to Audio Group"
     sudo usermod -a -G audio $curruser
     whiptail --yesno "Install LedFx as a service so it launches automatically on boot?" --yes-button "Yes" --no-button "No" "${r}" "${c}"
@@ -51,12 +51,12 @@
     RestartSec=5
     User="$curruser"
     Group=audio
-    ExecStart=/usr/bin/python3 /home/"$curruser"/.local/bin/ledfx
+    ExecStart="$HOME"/.ledfx/bin/python "$HOME"/.ledfx/bin/ledfx
     Environment=XDG_RUNTIME_DIR=/run/user/"$UID"
     [Install]
     WantedBy=multi-user.target
-    " >> ~/ledfx.service
-    sudo mv ~/ledfx.service /etc/systemd/system/ledfx.service
+    " >> $HOME/.ledfx.service
+    sudo mv $HOME/.ledfx.service /etc/systemd/system/ledfx.service
     sudo systemctl enable ledfx
     sudo systemctl start ledfx
     sudo systemctl status ledfx
@@ -65,14 +65,14 @@
 
     else
 
-    echo "LedFx is now installed. Please type ledfx to start."
+    echo "LedFx is now installed. Please type $HOME/.ledfx/bin/ledfx to start."
     echo "If you have no audio devices in LedFx and you're on a Raspberry Pi, please run 'sudo raspi-config' and setup your audio device (System Devices -> Audio)"
     fi
   }
 
   update-ledfx () {
     sudo systemctl stop ledfx 2> /dev/null
-    python3 -m pip install --upgrade --force-reinstall --no-deps --no-cache-dir ledfx
+    $HOME/.ledfx/bin/python -m pip install --upgrade --force-reinstall --no-deps --no-cache-dir ledfx
     echo "All Updated, enjoy LedFx!"
     sudo systemctl start ledfx 2> /dev/null
   }
@@ -81,7 +81,7 @@
     sudo systemctl stop ledfx 2> /dev/null
     echo "Stopping Service..."
     sleep 2
-    rm ~/.ledfx/config.json
+    rm $HOME/.ledfx/.ledfx/config.json
     echo "Configuration Deleted"
     echo "Restarting Service..."
     sudo systemctl start ledfx 2> /dev/null
@@ -89,7 +89,7 @@
   }
 
   backup-config (){
-    cp ~/.ledfx/config.json ~/config.json.bak
+    cp $HOME/.ledfx/config.json $HOME/.ledfx/config.json.bak
     menu
   }
 
@@ -98,10 +98,9 @@
     sudo systemctl stop ledfx 2> /dev/null
     sudo systemctl disable ledfx 2> /dev/null
     sudo rm /etc/systemd/system/ledfx.service 2> /dev/null
-    python3 -m pip -q uninstall -y ledfx 2> /dev/null
 
 
-    rm -rf ~/.ledfx/
+    rm -rf $HOME/.ledfx/
     echo "LedFx uninstalled. Sorry to see you go :("
   }
 
@@ -110,12 +109,13 @@
     sudo systemctl stop ledfx 2> /dev/null
     sudo systemctl disable ledfx 2> /dev/null
     sudo rm /etc/systemd/system/ledfx.service 2> /dev/null
-    python3 -m pip -q uninstall -y ledfx 2> /dev/null
+    rm -rf $HOME/.ledfx/
+
     install-ledfx
   }
 
   menu () {
-    FILE=~/.ledfx/config.json
+    FILE=$HOME/.ledfx/config.json
     if [ -f "$FILE" ]; then
 
     INSTALLOPTION=$(
