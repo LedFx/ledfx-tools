@@ -26,7 +26,8 @@
             pulseaudio \
             python3-pip \
             python3-venv \
-            avahi-daemon
+            avahi-daemon \
+            cmake
     python3 -m venv $HOME/.ledfx
     $HOME/.ledfx/bin/python -m pip install --upgrade pip wheel setuptools
     curruser=$USER
