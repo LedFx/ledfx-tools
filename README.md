@@ -128,6 +128,11 @@ saturation/drops limit what any local benchmark can conclude.
 only during the measured interval. Inspect retained `.prof` files with `pstats`
 or SnakeViz. Keep profiled throughput separate from the primary unprofiled
 campaign.
+The render option wraps frame assembly and device sending, rather than the whole
+render cycle. These selectors do not guarantee thread isolation: CPython builds
+can include other threads in a deterministic profile and mix their timing
+contexts. Treat these profiles as hotspot hints; use all-thread sampling for
+thread attribution and avoid deriving CPU percentages from overlapping timings.
 
 Python 3.15 or newer in the worker environment supports `--sampling cpu`,
 `--sampling wall` and `--sampling gil`. Recordings include
