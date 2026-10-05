@@ -124,6 +124,11 @@ saturation/drops limit what any local benchmark can conclude.
 
 ## Profile effects
 
+See the [Python 3.15 profiling guide](docs/python315-profiling.md) for environment
+setup, CPU/GIL capture, controller sampling and replay. The reviewed
+[preview bottleneck finding](findings/2026-10-05-preview-bottleneck.md) separates
+observed results from the follow-up subscription/coalescing roadmap.
+
 `--profile main`, `--profile render` and `--profile effect` capture cProfile
 only during the measured interval. Inspect retained `.prof` files with `pstats`
 or SnakeViz. Keep profiled throughput separate from the primary unprofiled
@@ -160,7 +165,8 @@ measurements.
 
 Outputs live in ignored `artifacts/` or outside this repository. Existing output
 files/directories are refused. Measurements, manifests, captured logs, profiles
-and benchmark findings are not tracked in source. Each pixel result has adjacent
+and generated benchmark artifacts are not tracked in source. Reviewed written
+findings live in `findings/`. Each pixel result has adjacent
 metadata with app/source/dependency and installed sender hashes, a summary and
 `.artifacts/` containing logs, readiness/provenance data, timing samples and
 requested profiles. The paired driver retains exact commands, process status,
