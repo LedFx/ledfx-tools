@@ -11,7 +11,8 @@ import pytest
 
 from ledfx_performance import matrix
 from ledfx_performance.data import Record, artifact_path, command, decode_record
-from ledfx_performance.options import parse_args
+from ledfx_performance.options import Options, parse_args
+from ledfx_performance.pixel import worker_command
 from ledfx_performance.process import run_retained_process
 
 
@@ -88,6 +89,17 @@ def test_invalid_workload_arguments_fail_early(
                 *options,
             ]
         )
+
+
+def test_controller_vis_pixels_reach_preview_streams(tmp_path: Path) -> None:
+    options = Options(vis_pixels=1024)
+    for stream in ("none", "default"):
+        worker = worker_command(options, tmp_path, 1, 2, stream)
+        assert worker[worker.index("--vis-pixels") + 1] == "1024"
+    full = worker_command(options, tmp_path, 1, 2, "full")
+    assert full[full.index("--vis-pixels") + 1] == str(options.pixels)
+    preview = worker_command(Options(), tmp_path, 1, 2, "none")
+    assert preview[preview.index("--vis-pixels") + 1] == "81"
 
 
 def test_results_cannot_be_written_into_tracked_tools_source() -> None:
