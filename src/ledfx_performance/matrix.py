@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import json
 import math
 import random
@@ -127,6 +128,9 @@ def parse_args(argv: list[str] | None = None) -> Settings:
             args.receiver = args.receiver.resolve()
             if not args.receiver.is_file():
                 raise ValueError("Receiver must exist")
+        address = ipaddress.ip_address(args.bind)
+        if address.version != 4 or not address.is_loopback:
+            raise ValueError("--bind must be an IPv4 loopback address")
     except ValueError as error:
         parser.error(str(error))
     return args

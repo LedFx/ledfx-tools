@@ -91,6 +91,31 @@ def test_invalid_workload_arguments_fail_early(
         )
 
 
+def test_matrix_rejects_binds_the_pixel_runner_rejects(
+    repo: Path, tmp_path: Path
+) -> None:
+    def argv(value: str) -> list[str]:
+        return [
+            "--baseline-repo",
+            str(repo),
+            "--candidate-repo",
+            str(repo),
+            "--baseline-python",
+            sys.executable,
+            "--candidate-python",
+            sys.executable,
+            "--output",
+            str(tmp_path / "trial"),
+            "--bind",
+            value,
+        ]
+
+    with pytest.raises(SystemExit) as error:
+        matrix.parse_args(argv("192.0.2.1"))
+    assert error.value.code == 2
+    assert matrix.parse_args(argv("127.0.0.1")).bind == "127.0.0.1"
+
+
 def test_controller_vis_pixels_reach_preview_streams(tmp_path: Path) -> None:
     options = Options(vis_pixels=1024)
     for stream in ("none", "default"):
