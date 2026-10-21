@@ -28,6 +28,10 @@
             python3-venv \
             avahi-daemon \
             cmake
+    # 32-bit Raspberry Pi OS: piwheels' NumPy, aubio and Pillow wheels load these.
+    if [ "$(dpkg --print-architecture)" = armhf ]; then
+      sudo apt-get install -y libopenblas0 ffmpeg libwebpdemux2
+    fi
     python3 -m venv $HOME/.ledfx
     $HOME/.ledfx/bin/python -m pip install --upgrade pip wheel setuptools
     curruser=$USER
