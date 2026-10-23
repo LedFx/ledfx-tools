@@ -127,7 +127,7 @@ def worker_command(
         "--pixels",
         str(args.pixels),
         "--vis-pixels",
-        str(args.pixels if stream == "full" else 81),
+        str(args.pixels if stream == "full" else args.vis_pixels),
         "--device",
         args.device,
         "--refresh-rate",
